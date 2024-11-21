@@ -3,36 +3,52 @@ package com.alterpat.personalexpensetracker
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.android.synthetic.main.activity_main.*
+import androidx.recyclerview.widget.RecyclerView
+import com.alterpat.personalexpensetracker.databinding.ActivityMainBinding
 
-
+//import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var transactions : ArrayList<Transaction>
     private lateinit var transactionAdapter : TransactionAdapter
     private lateinit var linearLayoutManager : LinearLayoutManager
 
+    private lateinit var binding: ActivityMainBinding
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         setContentView(R.layout.activity_main)  // Uses the new minimal layout
 
         transactions = arrayListOf(
-            Transaction("Weekend Budget", amount = 400.00),
-            Transaction("Bananas", -4.00),
-            Transaction("Gasolin", amount = -40.90),
-            Transaction("Breakfast", amount = -9.99),
-            Transaction("Water bottles", amount = -4.00),
-            Transaction("Suncream", amount = -8.00),
-            Transaction("Car Park", amount = -15.00),
+            Transaction("Weekend Budget",400.00),
+            Transaction("Bananas",-4.00),
+            Transaction("Gasolin",-40.90),
+            Transaction("Breakfast",-9.99),
+            Transaction("Water bottles",-4.00),
+            Transaction("Suncream",-8.00),
+            Transaction("Car Park",-15.00),
         )
 
         transactionAdapter = TransactionAdapter(transactions)
         linearLayoutManager = LinearLayoutManager(this)
 
-        recyclerview.apply{
+
+        val recyclerView: RecyclerView = findViewById(R.id.recyclerview)
+        recyclerView.adapter = transactionAdapter
+        recyclerView.layoutManager = linearLayoutManager
+
+
+        recyclerView.apply{
             adapter = transactionAdapter
             layoutManager = linearLayoutManager
         }
+
+        updateDashboard()
     }
 
     private fun updateDashboard(){
@@ -40,6 +56,9 @@ class MainActivity : AppCompatActivity() {
         val budgetAmount = transactions.filter { it.amount>0 }.map { it.amount }.sum()
         val expenseAmount = totalAmount - budgetAmount
 
+        binding.balance.text = "$ %.2f".format(totalAmount)
+        binding.budget.text = "$ %.2f".format(budgetAmount)
+        binding.expense.text = "$ %.3f".format(expenseAmount)
 
     }
 
